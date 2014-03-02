@@ -29,5 +29,11 @@ namespace ConvexHull
         {
             // TODO Maybe implement lock
         }
+
+        private void FindMinMaxX()
+        {
+            var minX = _graph.Nodes.Min(n => n.Position.X);
+            var maxX = _graph.Nodes.Max(n => n.Position.X);
+        }
     }
 }
