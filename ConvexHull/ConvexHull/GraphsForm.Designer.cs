@@ -1,6 +1,6 @@
 ﻿namespace ConvexHull
 {
-    partial class Form1
+    partial class GraphsForm
     {
         /// <summary>
         /// Required designer variable.

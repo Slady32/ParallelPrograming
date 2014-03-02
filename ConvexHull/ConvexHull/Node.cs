@@ -8,7 +8,7 @@ namespace ConvexHull
 {
     public class Node
     {
-        public readonly Guid Id { get; private set; }
+        public Guid Id { get; private set; }
         public Point Position { get; private set; }
         public Node Next { get; set; }
         public Node Prev { get; set; }
