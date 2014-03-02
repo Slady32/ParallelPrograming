@@ -25,7 +25,7 @@ namespace ConvexHull
                 }
             }
 
-            return SetNeighbours(graph);
+            return graph;
         }
 
         public Graph GenerateGraphWithList(Point origin, List<Point> points)
@@ -36,40 +36,6 @@ namespace ConvexHull
                 graph.Nodes.Add(new Node(p));
             }
 
-            return SetNeighbours(graph);
-        }
-
-        private Graph SetNeighbours(Graph graph)
-        {
-            if (graph.Nodes.Count != 0)
-            {
-                if (graph.Nodes.Count > 1)
-                {
-                    for (var i = 0; i < graph.Nodes.Count; i++)
-                    {
-                        if (i == 0)
-                        {
-                            graph.Nodes[i].Next = graph.Nodes[i + 1];
-                            graph.Nodes[i].Prev = graph.Nodes[graph.Nodes.Count - 1];
-                        }
-                        else if (i == graph.Nodes.Count - 1)
-                        {
-                            graph.Nodes[i].Next = graph.Nodes[0];
-                            graph.Nodes[i].Prev = graph.Nodes[i - 1];
-                        }
-                        else
-                        {
-                            graph.Nodes[i].Next = graph.Nodes[i + 1];
-                            graph.Nodes[i].Prev = graph.Nodes[i - 1];
-                        }
-                    }
-                }
-                else
-                {
-                    graph.Nodes[0].Next = graph.Nodes[0];
-                    graph.Nodes[0].Prev = graph.Nodes[0];
-                }
-            }
             return graph;
         }
     }
