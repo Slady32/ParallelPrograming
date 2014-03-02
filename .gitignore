@@ -2,6 +2,6 @@
 *.suo
 bin/
 obj/
-TestResults/
+*/test*/
 *.mdf
 *.ldf
