@@ -9,10 +9,16 @@ namespace ConvexHull
 {
     public class GraphFactory
     {
-        public Graph GenerateGraphWithRandoms(Point origin)
+        public Graph GenerateGraphWithRandoms(Point origin, int count)
         {
             var graph = new Graph(origin);
-            return graph;
+            var randomizor = new Random();
+            for (var i = 0; i < count; i++)
+            { 
+                graph.Nodes.Add(new Node(new Point(randomizor.Next(0,8) * 25, randomizor.Next(0,8) * 25)));
+            }
+
+            return SetRandomNeighbours(graph);
         }
 
         public Graph GenerateGraphWithList(Point origin, List<Point> points)
@@ -22,6 +28,14 @@ namespace ConvexHull
             {
                 graph.Nodes.Add(new Node(p));
             }
+
+            return SetNeighbours(graph);
+        }
+
+        private Graph SetNeighbours(Graph graph)
+        {
+            var retVal = graph;
+
             for (var i = 0; i < graph.Nodes.Count; i++)
             {
                 if (i == 0)
@@ -39,11 +53,54 @@ namespace ConvexHull
                     graph.Nodes[i].Next = graph.Nodes[i + 1];
                     graph.Nodes[i].Prev = graph.Nodes[i - 1];
                 }
-
             }
+            return retVal;
+        }
+        private Graph SetRandomNeighbours(Graph graph)
+        {
+            var sortgraph = GraphSort(graph);
 
-            return graph;
+
+            return SetNeighbours(graph);
         }
 
-    }
+        private Graph GraphSort(Graph graph)
+        {
+            var retVal = new Graph(graph.Origin);
+            var firstNode = graph.Nodes[0];
+            for (var i = 0; i < graph.Nodes.Count; i++)
+            {
+                
+            }
+
+            return retVal;
+        }
+        private Node FindClosest(Node node, Graph graph)
+        {
+            var retVal = new Node(new Point());
+            int minDistance = 150;
+            foreach (var n in graph.Nodes)
+            {
+                if (n.Id != node.Id)
+                {
+                   var distance = CalculateDifference(n.Position, node.Position);
+                   if (distance < minDistance)
+                   {
+                       minDistance = distance;
+                       retVal = n;
+                   }
+                }
+            }
+
+
+            return retVal;
+        }
+
+        private int CalculateDifference(Point position1, Point position2)
+        {
+            int xDiff = Math.Abs(position1.X - position2.X);
+            int yDiff = Math.Abs(position1.Y - position2.Y);
+            return xDiff + yDiff;
+        }
+     }
 }
