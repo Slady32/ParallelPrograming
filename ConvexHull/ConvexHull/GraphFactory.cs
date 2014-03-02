@@ -17,11 +17,11 @@ namespace ConvexHull
             {
                 if (i == 0)
                 {
-                    graph.Nodes.Add(new Node(new Point(graph.Origin.X - randomizor.Next(1, 4) * 25, graph.Origin.X - randomizor.Next(1, 4) * 25)));
+                    graph.Points.Add(new Node(new Point(graph.Origin.X - randomizor.Next(1, 4) * 25, graph.Origin.X - randomizor.Next(1, 4) * 25)));
                 }
                 else
                 {
-                    graph.Nodes.Add(new Node(new Point(graph.Origin.X + randomizor.Next(-4, 4) * 25, graph.Origin.X + randomizor.Next(-4, 4) * 25)));
+                    graph.Points.Add(new Node(new Point(graph.Origin.X + randomizor.Next(-4, 4) * 25, graph.Origin.X + randomizor.Next(-4, 4) * 25)));
                 }
             }
 
@@ -33,7 +33,7 @@ namespace ConvexHull
             var graph = new Graph(origin);
             foreach (var p in points)
             {
-                graph.Nodes.Add(new Node(p));
+                graph.Points.Add(new Node(p));
             }
 
             return SetNeighbours(graph);
@@ -41,33 +41,33 @@ namespace ConvexHull
 
         private Graph SetNeighbours(Graph graph)
         {
-            if (graph.Nodes.Count != 0)
+            if (graph.Points.Count != 0)
             {
-                if (graph.Nodes.Count > 1)
+                if (graph.Points.Count > 1)
                 {
-                    for (var i = 0; i < graph.Nodes.Count; i++)
+                    for (var i = 0; i < graph.Points.Count; i++)
                     {
                         if (i == 0)
                         {
-                            graph.Nodes[i].Next = graph.Nodes[i + 1];
-                            graph.Nodes[i].Prev = graph.Nodes[graph.Nodes.Count - 1];
+                            graph.Points[i].Next = graph.Points[i + 1];
+                            graph.Points[i].Prev = graph.Points[graph.Points.Count - 1];
                         }
-                        else if (i == graph.Nodes.Count - 1)
+                        else if (i == graph.Points.Count - 1)
                         {
-                            graph.Nodes[i].Next = graph.Nodes[0];
-                            graph.Nodes[i].Prev = graph.Nodes[i - 1];
+                            graph.Points[i].Next = graph.Points[0];
+                            graph.Points[i].Prev = graph.Points[i - 1];
                         }
                         else
                         {
-                            graph.Nodes[i].Next = graph.Nodes[i + 1];
-                            graph.Nodes[i].Prev = graph.Nodes[i - 1];
+                            graph.Points[i].Next = graph.Points[i + 1];
+                            graph.Points[i].Prev = graph.Points[i - 1];
                         }
                     }
                 }
                 else
                 {
-                    graph.Nodes[0].Next = graph.Nodes[0];
-                    graph.Nodes[0].Prev = graph.Nodes[0];
+                    graph.Points[0].Next = graph.Points[0];
+                    graph.Points[0].Prev = graph.Points[0];
                 }
             }
             return graph;

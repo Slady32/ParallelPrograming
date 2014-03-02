@@ -19,10 +19,10 @@ namespace ConvexHull
         public void Execute()
         {
             // TODO Configurable thread count?
-            var threads = Enumerable.Range(0, _graph.Nodes.Count / 2).Select(t => new Thread(() => FindConvexAncestor())).ToArray();
+            var threads = Enumerable.Range(0, _graph.Points.Count / 2).Select(t => new Thread(() => FindConvexAncestor())).ToList();
 
-            Array.ForEach(threads, t => t.Start());
-            Array.ForEach(threads, t => t.Join());
+            threads.ForEach(t => t.Start());
+            threads.ForEach(t => t.Join());
         }
 
         private void FindConvexAncestor()
@@ -32,8 +32,8 @@ namespace ConvexHull
 
         private void FindMinMaxX()
         {
-            var minX = _graph.Nodes.Min(n => n.Position.X);
-            var maxX = _graph.Nodes.Max(n => n.Position.X);
+            var minX = _graph.Points.Min(n => n.Position.X);
+            var maxX = _graph.Points.Max(n => n.Position.X);
         }
     }
 }

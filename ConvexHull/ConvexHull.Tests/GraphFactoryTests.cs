@@ -23,7 +23,7 @@ namespace ConvexHull.Tests
 
             var graph = factory.GenerateGraphWithList(new Point(0, 0), points);
 
-            Assert.AreEqual(graph.Nodes.Count, 0);
+            Assert.AreEqual(graph.Points.Count, 0);
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace ConvexHull.Tests
 
             var graph = factory.GenerateGraphWithList(new Point(0, 0), points);
 
-            Assert.AreEqual(graph.Nodes.Count, 1);
+            Assert.AreEqual(graph.Points.Count, 1);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace ConvexHull.Tests
 
             var graph = factory.GenerateGraphWithList(new Point(0, 0), points);
 
-            Assert.AreEqual(graph.Nodes.Count, 4);
+            Assert.AreEqual(graph.Points.Count, 4);
         }
 
         [TestMethod]
@@ -78,20 +78,20 @@ namespace ConvexHull.Tests
             var graph = factory.GenerateGraphWithList(new Point(0, 0), points);
 
             // Connections of first point
-            Assert.AreEqual(graph.Nodes[0].Prev.Position, p4);
-            Assert.AreEqual(graph.Nodes[0].Next.Position, p2);
+            Assert.AreEqual(graph.Points[0].Prev.Position, p4);
+            Assert.AreEqual(graph.Points[0].Next.Position, p2);
 
             // Connections of second point
-            Assert.AreEqual(graph.Nodes[1].Prev.Position, p1);
-            Assert.AreEqual(graph.Nodes[1].Next.Position, p3);
+            Assert.AreEqual(graph.Points[1].Prev.Position, p1);
+            Assert.AreEqual(graph.Points[1].Next.Position, p3);
 
             // Connections of third point
-            Assert.AreEqual(graph.Nodes[2].Prev.Position, p2);
-            Assert.AreEqual(graph.Nodes[2].Next.Position, p4);
+            Assert.AreEqual(graph.Points[2].Prev.Position, p2);
+            Assert.AreEqual(graph.Points[2].Next.Position, p4);
 
             // Connections of fourth point
-            Assert.AreEqual(graph.Nodes[3].Prev.Position, p3);
-            Assert.AreEqual(graph.Nodes[3].Next.Position, p1);
+            Assert.AreEqual(graph.Points[3].Prev.Position, p3);
+            Assert.AreEqual(graph.Points[3].Next.Position, p1);
         }
         
         [TestMethod]
@@ -108,12 +108,12 @@ namespace ConvexHull.Tests
             var graph = factory.GenerateGraphWithList(new Point(0, 0), points);
 
             // Connections of first point
-            Assert.AreEqual(graph.Nodes[0].Prev.Position, p2);
-            Assert.AreEqual(graph.Nodes[0].Next.Position, p2);
+            Assert.AreEqual(graph.Points[0].Prev.Position, p2);
+            Assert.AreEqual(graph.Points[0].Next.Position, p2);
 
             // Connections of second point
-            Assert.AreEqual(graph.Nodes[1].Prev.Position, p1);
-            Assert.AreEqual(graph.Nodes[1].Next.Position, p1);
+            Assert.AreEqual(graph.Points[1].Prev.Position, p1);
+            Assert.AreEqual(graph.Points[1].Next.Position, p1);
         }
     }
 }
