@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,15 +9,15 @@ namespace ConvexHull
 {
     public class GraphFactory
     {
-        public Graph GenerateGraphWithRandoms(int originX, int originY)
+        public Graph GenerateGraphWithRandoms(Point origin)
         {
-            var graph = new Graph(new Point(originX, originY));
+            var graph = new Graph(origin);
             return graph;
         }
 
-        public Graph GenerateGraphWithList(int originX, int originY, List<Point> points)
+        public Graph GenerateGraphWithList(Point origin, List<Point> points)
         {
-            var graph = new Graph(new Point(originX, originY));
+            var graph = new Graph(origin);
             foreach (var p in points)
             {
                 graph.Nodes.Add(new Node(p));
@@ -28,7 +29,7 @@ namespace ConvexHull
                     graph.Nodes[i].Next = graph.Nodes[i + 1];
                     graph.Nodes[i].Prev = graph.Nodes[graph.Nodes.Count - 1];
                 }
-                if (i == graph.Nodes.Count - 1)
+                else if (i == graph.Nodes.Count - 1)
                 {
                     graph.Nodes[i].Next = graph.Nodes[0];
                     graph.Nodes[i].Prev = graph.Nodes[i - 1];

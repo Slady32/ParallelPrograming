@@ -18,18 +18,24 @@ namespace ConvexHull
         {
             InitializeComponent();
 
+            var graphFactory = new GraphFactory();
+            var pointList = new List<Point>
+            {
+                new Point(0,0),
+                new Point(50,25),
+                new Point(100,0),
+                new Point(50,125),
+                new Point(100,100),
+                new Point(50,150),
+                new Point(0,100),
+                new Point(50,50)
+            };
+            var graph = graphFactory.GenerateGraphWithList(new Point(100,100), pointList);
+
+
             Graphs = new List<IPainter>
             {
-                new Graph(new Point(10, 20))
-                {
-                    Nodes = new List<Node>
-                    {
-                        new Node(new Point(0, 0)),
-                        new Node(new Point(0, 10)),
-                        new Node(new Point(10, 10)),
-                        new Node(new Point(10, 0))
-                    }
-                }
+                graph
             };
         }
 

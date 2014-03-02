@@ -18,6 +18,7 @@ namespace ConvexHull
         {
             Id = Guid.NewGuid();
             Origin = origin;
+            Nodes = new List<Node>();
         }
 
         public void Paint(PaintEventArgs e)
@@ -26,8 +27,8 @@ namespace ConvexHull
             {
                 e.Graphics.DrawRectangle(Pens.Black, Origin.X + node.Position.X, Origin.Y + node.Position.Y, 5f, 5f);
 
-                var startPoint = node.Position;
-                var endPoint = node.Next.Position;
+                var startPoint = new Point(node.Position.X + Origin.X,node.Position.Y + Origin.Y);
+                var endPoint = new Point(node.Next.Position.X + Origin.X, node.Next.Position.Y + Origin.Y);
 
                 e.Graphics.DrawLine(Pens.Black, startPoint, endPoint);
             }
