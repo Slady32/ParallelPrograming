@@ -19,24 +19,27 @@ namespace ConvexHull
             InitializeComponent();
 
             var graphFactory = new GraphFactory();
-            var pointList = new List<Point>
-            {
-                new Point(0,0),
-                new Point(50,25),
-                new Point(100,0),
-                new Point(50,125),
-                new Point(100,100),
-                new Point(50,150),
-                new Point(0,100),
-                new Point(50,50)
-            };
-            //var graph = graphFactory.GenerateGraphWithList(new Point(100,100), pointList);
+            //var pointList = new List<Point>
+            //{
+            //    new Point(5,0),
+            //    new Point(50,25),
+            //    new Point(99,0),
+            //    new Point(50,125),
+            //    new Point(100,100),
+            //    new Point(50,150),
+            //    new Point(0,100),
+            //    new Point(50,50)
+            //};
+            //var graph = graphFactory.GenerateGraphWithList(new Point(100, 100), pointList);
             var graph = graphFactory.GenerateGraphWithRandoms(new Point(100, 100), 10);
 
             Graphs = new List<IPainter>
             {
                 graph
             };
+
+            var hull = new QuickHull(graph);
+            hull.Execute();
         }
 
         protected override void OnPaint(PaintEventArgs e)
