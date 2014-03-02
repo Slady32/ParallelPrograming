@@ -8,7 +8,7 @@ namespace ConvexHull
 {
     public static class ListExtension
     {
-        public static IList<T> ForEach<T>(this IList<T> list, Action<T> action) where T:class
+        public static IList<T> ForEach<T>(this IList<T> list, Action<T> action)
         {
             foreach (T item in list)
             {
