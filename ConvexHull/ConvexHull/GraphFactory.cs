@@ -34,27 +34,36 @@ namespace ConvexHull
 
         private Graph SetNeighbours(Graph graph)
         {
-            var retVal = graph;
-
-            for (var i = 0; i < graph.Nodes.Count; i++)
+            if (graph.Nodes.Count != 0)
             {
-                if (i == 0)
+                if (graph.Nodes.Count > 1)
                 {
-                    graph.Nodes[i].Next = graph.Nodes[i + 1];
-                    graph.Nodes[i].Prev = graph.Nodes[graph.Nodes.Count - 1];
-                }
-                else if (i == graph.Nodes.Count - 1)
-                {
-                    graph.Nodes[i].Next = graph.Nodes[0];
-                    graph.Nodes[i].Prev = graph.Nodes[i - 1];
+                    for (var i = 0; i < graph.Nodes.Count; i++)
+                    {
+                        if (i == 0)
+                        {
+                            graph.Nodes[i].Next = graph.Nodes[i + 1];
+                            graph.Nodes[i].Prev = graph.Nodes[graph.Nodes.Count - 1];
+                        }
+                        else if (i == graph.Nodes.Count - 1)
+                        {
+                            graph.Nodes[i].Next = graph.Nodes[0];
+                            graph.Nodes[i].Prev = graph.Nodes[i - 1];
+                        }
+                        else
+                        {
+                            graph.Nodes[i].Next = graph.Nodes[i + 1];
+                            graph.Nodes[i].Prev = graph.Nodes[i - 1];
+                        }
+                    }
                 }
                 else
                 {
-                    graph.Nodes[i].Next = graph.Nodes[i + 1];
-                    graph.Nodes[i].Prev = graph.Nodes[i - 1];
+                    graph.Nodes[0].Next = graph.Nodes[0];
+                    graph.Nodes[0].Prev = graph.Nodes[0];
                 }
             }
-            return retVal;
+            return graph;
         }
         private Graph SetRandomNeighbours(Graph graph)
         {
