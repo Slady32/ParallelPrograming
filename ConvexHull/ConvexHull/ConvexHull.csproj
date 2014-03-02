@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvexHullFinder.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="GraphFactory.cs" />
     <Compile Include="GraphsForm.cs">
@@ -53,9 +54,13 @@
       <DependentUpon>GraphsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="IPainter.cs" />
+    <Compile Include="ListExtension.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GraphsForm.resx">
+      <DependentUpon>GraphsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
