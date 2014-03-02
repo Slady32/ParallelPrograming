@@ -30,8 +30,8 @@ namespace ConvexHull
                 new Point(0,100),
                 new Point(50,50)
             };
-            var graph = graphFactory.GenerateGraphWithList(new Point(100,100), pointList);
-
+            //var graph = graphFactory.GenerateGraphWithList(new Point(100,100), pointList);
+            var graph = graphFactory.GenerateGraphWithRandoms(new Point(100, 100), 10);
 
             Graphs = new List<IPainter>
             {
