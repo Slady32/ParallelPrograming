@@ -15,13 +15,10 @@ namespace ConvexHull
         private readonly Graph _graph;
 
         private static readonly object _lockObject = new object();
-
-        private ConcurrentDictionary<int, int> _indices;
-
+        
         public QuickHull(Graph graph)
         {
             _graph = graph;
-            _indices = new ConcurrentDictionary<int, int>();
         }
 
         public void Execute()
@@ -33,18 +30,15 @@ namespace ConvexHull
             _graph.HullNodes.Add(rightNode);
 
             // upperHalf is under the line (y >= value)
-            var upperHalf = new ConcurrentBag<Node>();
+            var upperHalf = new ConcurrentQueue<Node>();
             // lowerHalf is over the line (y < value)
-            var lowerHalf = new ConcurrentBag<Node>();
+            var lowerHalf = new ConcurrentQueue<Node>();
 
-            _indices.AddOrUpdate(0, 0, (k, v) => 0);
-            ExecuteThread(_graph.Points.Count, () => Split(_graph.Points, 0, lowerHalf, upperHalf, leftNode, rightNode));
+            var points = new ConcurrentQueue<Point>(_graph.Points);
+            ExecuteThread(points.Count, () => Split(points, lowerHalf, upperHalf, leftNode, rightNode));
 
-            _indices.AddOrUpdate(1, 0, (k, v) => v);
-            FindMinY(lowerHalf, 1, leftNode, rightNode);
-
-            _indices.AddOrUpdate(2, 0, (k, v) => v);
-            FindMaxY(upperHalf, 2, rightNode, leftNode);
+            FindMinY(lowerHalf, leftNode, rightNode);
+            FindMaxY(upperHalf, rightNode, leftNode);
 
             Console.WriteLine();
         }
@@ -66,19 +60,15 @@ namespace ConvexHull
             rightNode.Next = leftNode;
         }
 
-        private void Split(IList<Point> points, int indexIndex, ConcurrentBag<Node> lowerHalf, ConcurrentBag<Node> upperHalf, Node leftNode, Node rightNode)
+        private void Split(ConcurrentQueue<Point> points, ConcurrentQueue<Node> lowerHalf, ConcurrentQueue<Node> upperHalf, Node leftNode, Node rightNode)
         {
             // calculate y for x-value
-            Node curNode = null;
-            lock (_lockObject)
+            Point point;
+            points.TryDequeue(out point);
+            Node curNode = new Node(point);
+            if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
             {
-                int index = _indices.SingleOrDefault(i => i.Key == indexIndex).Value;
-                curNode = new Node(points[index]);
-                _indices.TryUpdate(indexIndex, index + 1, index);
-                if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
-                {
-                    return;
-                }
+                return;
             }
 
             // insert wheter >= y or < y
@@ -87,23 +77,30 @@ namespace ConvexHull
             // == steigung
             float slope = (1f * yDif) / (1f * xDif);
 
-            float yHypo = (rightNode.Position.X - curNode.Position.X) * slope + rightNode.Position.Y;
-
+            var x = Math.Max(rightNode.Position.X, curNode.Position.X) - Math.Min(rightNode.Position.X, curNode.Position.X);
+            float yHypo = x * slope + rightNode.Position.Y;
+            // TODO Berechnung stimmt noch nicht ganz!!!!
             if (curNode.Position.Y >= yHypo)
             {
-                upperHalf.Add(curNode);
+                if (upperHalf != null)
+                {
+                    upperHalf.Enqueue(curNode);
+                }
             }
             else
             {
-                lowerHalf.Add(curNode);
+                if (lowerHalf != null)
+                {
+                    lowerHalf.Enqueue(curNode);
+                }
             }
         }
 
-        private void FindMinY(ConcurrentBag<Node> list, int indexIndex, Node prevNode, Node nextNode)
+        private void FindMinY(ConcurrentQueue<Node> list, Node prevNode, Node nextNode)
         {
             var nodeLengthPairs = new ConcurrentDictionary<Node, float>();
 
-            FindExtremeY(list, nodeLengthPairs, indexIndex, prevNode, nextNode);
+            FindExtremeY(list, nodeLengthPairs, prevNode, nextNode);
 
             var curNode = nodeLengthPairs.FirstOrDefault(n => n.Value == nodeLengthPairs.Max(nl => nl.Value)).Key;
             if (curNode != null)
@@ -111,39 +108,79 @@ namespace ConvexHull
                 _graph.HullNodes.Add(curNode);
                 prevNode.Next = curNode;
                 curNode.Next = nextNode;
+
+                // lowerHalf is over the line (y < value)
+                var lowerHalf = new ConcurrentQueue<Node>();
+
+                // all between prev and cur point
+                var positions = nodeLengthPairs.Keys.Where(p => p.Position.Y <= prevNode.Position.Y && p.Position.X >= prevNode.Position.X && p.Position.X < curNode.Position.X).Select(p => p.Position);
+                var points = new ConcurrentQueue<Point>(positions);
+
+                ExecuteThread(points.Count, () => Split(points, lowerHalf, null, prevNode, curNode));
+                if (lowerHalf.Count > 0)
+                {
+                    FindMinY(lowerHalf, prevNode, curNode);
+                }
+
+                // all between cur and next point
+                lowerHalf = new ConcurrentQueue<Node>();
+
+                positions = nodeLengthPairs.Keys.Where(p => p.Position.Y <= nextNode.Position.Y && p.Position.X <= nextNode.Position.X && p.Position.X > curNode.Position.X).Select(p => p.Position);
+                points = new ConcurrentQueue<Point>(positions);
+
+                ExecuteThread(points.Count, () => Split(points, lowerHalf, null, curNode, nextNode));
+                if (lowerHalf.Count > 0)
+                {
+                    FindMinY(lowerHalf, curNode, nextNode);
+                }
             }
         }
 
-        private void FindMaxY(ConcurrentBag<Node> list, int indexIndex, Node prevNode, Node nextNode)
+        private void FindMaxY(ConcurrentQueue<Node> list, Node prevNode, Node nextNode)
         {
             var nodeLengthPairs = new ConcurrentDictionary<Node, float>();
 
-            FindExtremeY(list, nodeLengthPairs, indexIndex, prevNode, nextNode);
+            FindExtremeY(list, nodeLengthPairs, prevNode, nextNode);
             var curNode = nodeLengthPairs.FirstOrDefault(n => n.Value == nodeLengthPairs.Max(nl => nl.Value)).Key;
             if (curNode != null)
             {
                 _graph.HullNodes.Add(curNode);
                 prevNode.Next = curNode;
                 curNode.Next = nextNode;
+
+                var upperHalf = new ConcurrentQueue<Node>();
+                // all between prev and cur point
+                var positions = nodeLengthPairs.Keys.Where(p => p.Position.Y > prevNode.Position.Y && p.Position.X <= prevNode.Position.X && p.Position.X > curNode.Position.X).Select(p => p.Position);
+                var points = new ConcurrentQueue<Point>(positions);
+
+                ExecuteThread(points.Count, () => Split(points, null, upperHalf, prevNode, curNode));
+                if (upperHalf.Count > 0)
+                {
+                    FindMaxY(upperHalf, prevNode, curNode);
+                }
+
+                upperHalf = new ConcurrentQueue<Node>();
+                // all between cur and next point
+                positions = nodeLengthPairs.Keys.Where(p => p.Position.Y > nextNode.Position.Y && p.Position.X >= nextNode.Position.X && p.Position.X < curNode.Position.X).Select(p => p.Position);
+                points = new ConcurrentQueue<Point>(positions);
+
+                ExecuteThread(points.Count, () => Split(points, null, upperHalf, curNode, nextNode));
+                if (upperHalf.Count > 0)
+                {
+                    FindMaxY(upperHalf, curNode, nextNode);
+                }
             }
         }
 
-        private void FindExtremeY(ConcurrentBag<Node> list, ConcurrentDictionary<Node, float> nodeLengthPairs, int indexIndex, Node prevNode, Node nextNode)
+        private void FindExtremeY(ConcurrentQueue<Node> list, ConcurrentDictionary<Node, float> nodeLengthPairs, Node prevNode, Node nextNode)
         {
-            var notConcurrentBagList = list.ToList();
-
-            ExecuteThread(notConcurrentBagList.Count, () => CalculateNodeLengthPairs(notConcurrentBagList, indexIndex, prevNode, nextNode, nodeLengthPairs));
+            ExecuteThread(list.Count, () => CalculateNodeLengthPairs(list, prevNode, nextNode, nodeLengthPairs));
         }
 
-        private void CalculateNodeLengthPairs(List<Node> nodeList, int indexIndex, Node prevNode, Node nextNode, ConcurrentDictionary<Node, float> nodeLengthPairs)
+        private void CalculateNodeLengthPairs(ConcurrentQueue<Node> nodeList, Node prevNode, Node nextNode, ConcurrentDictionary<Node, float> nodeLengthPairs)
         {
             Node curNode = null;
-            lock (_lockObject)
-            {
-                int index = _indices.SingleOrDefault(i => i.Key == indexIndex).Value;
-                curNode = nodeList[index];
-                _indices.TryUpdate(indexIndex, index + 1, index);
-            }
+            nodeList.TryDequeue(out curNode);
             
             float length = GetNormalVectorLength(prevNode.Position, nextNode.Position, curNode.Position);
             nodeLengthPairs.AddOrUpdate(curNode, length, (n, f) => length);            
@@ -151,9 +188,11 @@ namespace ConvexHull
 
         private int GetNormalVectorLength(Point A, Point B, Point C)
         {
-            int ABx = B.X - A.X;
-            int ABy = B.Y - A.Y;
-            int lengthNormalVector = ABx * (A.Y - C.Y) - ABy * (A.X - C.X);
+            int ABx = Math.Max(B.X, A.X) - Math.Min(B.X, A.X);
+            int ABy = Math.Max(B.Y, A.Y) - Math.Min(A.Y, B.Y);
+            int ACy = Math.Max(A.Y, C.Y) - Math.Min(C.Y, A.Y);
+            int ACx = Math.Max(A.X, C.X) - Math.Min(C.X, A.X);
+            int lengthNormalVector = ABx * ACy - ABy * ACx;
 
             return (lengthNormalVector < 0) ? -lengthNormalVector : lengthNormalVector;
         }
