@@ -28,21 +28,23 @@ namespace ConvexHull
         {
             Node leftNode = null, rightNode = null;
 
-            FindMinMaxX(out leftNode, out rightNode);
+            FindMinMaxX(_graph.Points, out leftNode, out rightNode);
+            _graph.HullNodes.Add(leftNode);
+            _graph.HullNodes.Add(rightNode);
 
             // upperHalf is under the line (y >= value)
             var upperHalf = new ConcurrentBag<Node>();
             // lowerHalf is over the line (y < value)
             var lowerHalf = new ConcurrentBag<Node>();
+
             _indices.AddOrUpdate(0, 0, (k, v) => 0);
             ExecuteThread(_graph.Points.Count, () => Split(_graph.Points, 0, lowerHalf, upperHalf, leftNode, rightNode));
 
             _indices.AddOrUpdate(1, 0, (k, v) => v);
-            //ExecuteThread(lowerHalf.Count, () => FindMinY(lowerHalf, 1,_leftNode, _rightNode));
             FindMinY(lowerHalf, 1, leftNode, rightNode);
+
             _indices.AddOrUpdate(2, 0, (k, v) => v);
             FindMaxY(upperHalf, 2, rightNode, leftNode);
-            //ExecuteThread(upperHalf.Count, () => FindMaxY(upperHalf));
 
             Console.WriteLine();
         }
@@ -55,13 +57,10 @@ namespace ConvexHull
             threads.ForEach(t => t.Join());
         }
 
-        private void FindMinMaxX(out Node leftNode, out Node rightNode)
+        private void FindMinMaxX(IList<Point> points, out Node leftNode, out Node rightNode)
         {
-            leftNode = new Node(_graph.Points.FirstOrDefault(p => p.X == _graph.Points.Min(po => po.X)));
-            _graph.HullNodes.Add(leftNode);
-
-            rightNode = new Node(_graph.Points.FirstOrDefault(p => p.X == _graph.Points.Max(po => po.X)));
-            _graph.HullNodes.Add(rightNode);
+            leftNode = new Node(points.FirstOrDefault(p => p.X == points.Min(po => po.X)));
+            rightNode = new Node(points.FirstOrDefault(p => p.X == points.Max(po => po.X)));
 
             leftNode.Next = rightNode;
             rightNode.Next = leftNode;
