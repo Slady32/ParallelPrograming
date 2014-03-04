@@ -14,11 +14,7 @@ namespace ConvexHull
     {
         private readonly Graph _graph;
 
-        private Node _leftNode;
-        private Node _rightNode;
-
         private static readonly object _lockObject = new object();
-        private int _index = 0;
 
         private ConcurrentDictionary<int, int> _indices;
 
@@ -30,20 +26,22 @@ namespace ConvexHull
 
         public void Execute()
         {
-            FindMinMaxX();
+            Node leftNode = null, rightNode = null;
+
+            FindMinMaxX(out leftNode, out rightNode);
 
             // upperHalf is under the line (y >= value)
             var upperHalf = new ConcurrentBag<Node>();
             // lowerHalf is over the line (y < value)
             var lowerHalf = new ConcurrentBag<Node>();
             _indices.AddOrUpdate(0, 0, (k, v) => 0);
-            ExecuteThread(_graph.Points.Count, () => Split(lowerHalf, upperHalf));
+            ExecuteThread(_graph.Points.Count, () => Split(_graph.Points, 0, lowerHalf, upperHalf, leftNode, rightNode));
 
             _indices.AddOrUpdate(1, 0, (k, v) => v);
             //ExecuteThread(lowerHalf.Count, () => FindMinY(lowerHalf, 1,_leftNode, _rightNode));
-            FindMinY(lowerHalf, 1, _leftNode, _rightNode);
+            FindMinY(lowerHalf, 1, leftNode, rightNode);
             _indices.AddOrUpdate(2, 0, (k, v) => v);
-            FindMaxY(upperHalf, 2, _rightNode, _leftNode);
+            FindMaxY(upperHalf, 2, rightNode, leftNode);
             //ExecuteThread(upperHalf.Count, () => FindMaxY(upperHalf));
 
             Console.WriteLine();
@@ -57,40 +55,40 @@ namespace ConvexHull
             threads.ForEach(t => t.Join());
         }
 
-        private void FindMinMaxX()
+        private void FindMinMaxX(out Node leftNode, out Node rightNode)
         {
-            _leftNode = new Node(_graph.Points.FirstOrDefault(p => p.X == _graph.Points.Min(po => po.X)));
-            _graph.HullNodes.Add(_leftNode);
+            leftNode = new Node(_graph.Points.FirstOrDefault(p => p.X == _graph.Points.Min(po => po.X)));
+            _graph.HullNodes.Add(leftNode);
 
-            _rightNode = new Node(_graph.Points.FirstOrDefault(p => p.X == _graph.Points.Max(po => po.X)));
-            _graph.HullNodes.Add(_rightNode);
+            rightNode = new Node(_graph.Points.FirstOrDefault(p => p.X == _graph.Points.Max(po => po.X)));
+            _graph.HullNodes.Add(rightNode);
 
-            _leftNode.Next = _rightNode;
-            _rightNode.Next = _leftNode;
+            leftNode.Next = rightNode;
+            rightNode.Next = leftNode;
         }
 
-        private void Split(ConcurrentBag<Node> lowerHalf, ConcurrentBag<Node> upperHalf)
+        private void Split(IList<Point> points, int indexIndex, ConcurrentBag<Node> lowerHalf, ConcurrentBag<Node> upperHalf, Node leftNode, Node rightNode)
         {
             // calculate y for x-value
             Node curNode = null;
             lock (_lockObject)
             {
-                int index = _indices.SingleOrDefault(i => i.Key == 0).Value;
-                curNode = new Node(_graph.Points[index]);
-                _indices.TryUpdate(0, index + 1, index);
-                if (curNode.Position == _leftNode.Position || curNode.Position == _rightNode.Position)
+                int index = _indices.SingleOrDefault(i => i.Key == indexIndex).Value;
+                curNode = new Node(points[index]);
+                _indices.TryUpdate(indexIndex, index + 1, index);
+                if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
                 {
                     return;
                 }
             }
 
             // insert wheter >= y or < y
-            int xDif = _rightNode.Position.X - _leftNode.Position.X;
-            int yDif = Math.Max(_leftNode.Position.Y, _rightNode.Position.Y) - Math.Min(_leftNode.Position.Y, _rightNode.Position.Y);
+            int xDif = rightNode.Position.X - leftNode.Position.X;
+            int yDif = Math.Max(leftNode.Position.Y, rightNode.Position.Y) - Math.Min(leftNode.Position.Y, rightNode.Position.Y);
             // == steigung
             float slope = (1f * yDif) / (1f * xDif);
 
-            float yHypo = (_rightNode.Position.X - curNode.Position.X) * slope + _rightNode.Position.Y;
+            float yHypo = (rightNode.Position.X - curNode.Position.X) * slope + rightNode.Position.Y;
 
             if (curNode.Position.Y >= yHypo)
             {
@@ -106,7 +104,7 @@ namespace ConvexHull
         {
             var nodeLengthPairs = new ConcurrentDictionary<Node, float>();
 
-            FindExtremeY(list, nodeLengthPairs, indexIndex, prevNode, nextNode, li => li.Min(po => po.Position.Y));
+            FindExtremeY(list, nodeLengthPairs, indexIndex, prevNode, nextNode);
 
             var curNode = nodeLengthPairs.FirstOrDefault(n => n.Value == nodeLengthPairs.Max(nl => nl.Value)).Key;
             if (curNode != null)
@@ -121,7 +119,7 @@ namespace ConvexHull
         {
             var nodeLengthPairs = new ConcurrentDictionary<Node, float>();
 
-            FindExtremeY(list, nodeLengthPairs, indexIndex, prevNode, nextNode, li => li.Min(po => po.Position.Y));
+            FindExtremeY(list, nodeLengthPairs, indexIndex, prevNode, nextNode);
             var curNode = nodeLengthPairs.FirstOrDefault(n => n.Value == nodeLengthPairs.Max(nl => nl.Value)).Key;
             if (curNode != null)
             {
@@ -131,14 +129,14 @@ namespace ConvexHull
             }
         }
 
-        private void FindExtremeY(ConcurrentBag<Node> list, ConcurrentDictionary<Node, float> nodeLengthPairs, int indexIndex, Node prevNode, Node nextNode, Func<ConcurrentBag<Node>, int> func)
+        private void FindExtremeY(ConcurrentBag<Node> list, ConcurrentDictionary<Node, float> nodeLengthPairs, int indexIndex, Node prevNode, Node nextNode)
         {
             var notConcurrentBagList = list.ToList();
 
-            ExecuteThread(notConcurrentBagList.Count, () => CalculateNodeLengthParis(notConcurrentBagList, indexIndex, prevNode, nextNode, nodeLengthPairs));
+            ExecuteThread(notConcurrentBagList.Count, () => CalculateNodeLengthPairs(notConcurrentBagList, indexIndex, prevNode, nextNode, nodeLengthPairs));
         }
 
-        private void CalculateNodeLengthParis(List<Node> nodeList, int indexIndex, Node prevNode, Node nextNode, ConcurrentDictionary<Node, float> nodeLengthPairs)
+        private void CalculateNodeLengthPairs(List<Node> nodeList, int indexIndex, Node prevNode, Node nextNode, ConcurrentDictionary<Node, float> nodeLengthPairs)
         {
             Node curNode = null;
             lock (_lockObject)
