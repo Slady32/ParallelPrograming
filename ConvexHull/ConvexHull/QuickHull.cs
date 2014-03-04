@@ -13,8 +13,6 @@ namespace ConvexHull
     public class QuickHull : IHull
     {
         private readonly Graph _graph;
-
-        private static readonly object _lockObject = new object();
         
         public QuickHull(Graph graph)
         {
