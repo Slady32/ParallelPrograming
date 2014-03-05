@@ -37,7 +37,7 @@ namespace ConvexHull
             var lowerHalf = new ConcurrentQueue<Node>();
 
             var points = new ConcurrentQueue<Point>(_graph.Points);
-            ExecuteThread(points.Count, () => Split(points, lowerHalf, upperHalf, leftNode, rightNode));
+            Split(points, lowerHalf, upperHalf, leftNode, rightNode);
 
             FindMinY(lowerHalf, leftNode, rightNode);
             FindMaxY(upperHalf, rightNode, leftNode);
@@ -67,37 +67,72 @@ namespace ConvexHull
         private void Split(ConcurrentQueue<Point> points, ConcurrentQueue<Node> lowerHalf, ConcurrentQueue<Node> upperHalf, Node leftNode, Node rightNode)
         {
             // calculate y for x-value
-            Point point;
-            points.TryDequeue(out point);
-            Node curNode = new Node(point);
-            if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
+            var count = points.Count;
+            for (int i = 0; i < count; i++)
             {
-                return;
-            }
-
-            // insert wheter >= y or < y
-            int xDif = rightNode.Position.X - leftNode.Position.X;
-            int yDif = Math.Max(leftNode.Position.Y, rightNode.Position.Y) - Math.Min(leftNode.Position.Y, rightNode.Position.Y);
-            // == steigung
-            float slope = (1f * yDif) / (1f * xDif);
-
-            var x = Math.Max(rightNode.Position.X, curNode.Position.X) - Math.Min(rightNode.Position.X, curNode.Position.X);
-            float yHypo = x * slope + rightNode.Position.Y;
-            // TODO Berechnung stimmt noch nicht ganz!!!!
-            if (curNode.Position.Y >= yHypo)
-            {
-                if (upperHalf != null)
+                Point point;
+                points.TryDequeue(out point);
+                Node curNode = new Node(point);
+                if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
                 {
-                    upperHalf.Enqueue(curNode);
+                    continue;
+                }
+
+                // insert wheter >= y or < y
+                int xDif = rightNode.Position.X - leftNode.Position.X;
+                int yDif = Math.Max(leftNode.Position.Y, rightNode.Position.Y) - Math.Min(leftNode.Position.Y, rightNode.Position.Y);
+                // == steigung
+                float slope = (1f * yDif) / (1f * xDif);
+
+                var x = Math.Max(rightNode.Position.X, curNode.Position.X) - Math.Min(rightNode.Position.X, curNode.Position.X);
+                float yHypo = x * slope + rightNode.Position.Y;
+                // TODO Berechnung stimmt noch nicht ganz!!!!
+                if (curNode.Position.Y >= yHypo)
+                {
+                    if (upperHalf != null)
+                    {
+                        upperHalf.Enqueue(curNode);
+                    }
+                }
+                else
+                {
+                    if (lowerHalf != null)
+                    {
+                        lowerHalf.Enqueue(curNode);
+                    }
                 }
             }
-            else
-            {
-                if (lowerHalf != null)
-                {
-                    lowerHalf.Enqueue(curNode);
-                }
-            }
+            //Point point;
+            //points.TryDequeue(out point);
+            //Node curNode = new Node(point);
+            //if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
+            //{
+            //    return;
+            //}
+
+            //// insert wheter >= y or < y
+            //int xDif = rightNode.Position.X - leftNode.Position.X;
+            //int yDif = Math.Max(leftNode.Position.Y, rightNode.Position.Y) - Math.Min(leftNode.Position.Y, rightNode.Position.Y);
+            //// == steigung
+            //float slope = (1f * yDif) / (1f * xDif);
+
+            //var x = Math.Max(rightNode.Position.X, curNode.Position.X) - Math.Min(rightNode.Position.X, curNode.Position.X);
+            //float yHypo = x * slope + rightNode.Position.Y;
+            //// TODO Berechnung stimmt noch nicht ganz!!!!
+            //if (curNode.Position.Y >= yHypo)
+            //{
+            //    if (upperHalf != null)
+            //    {
+            //        upperHalf.Enqueue(curNode);
+            //    }
+            //}
+            //else
+            //{
+            //    if (lowerHalf != null)
+            //    {
+            //        lowerHalf.Enqueue(curNode);
+            //    }
+            //}
         }
 
         private void FindMinY(ConcurrentQueue<Node> list, Node prevNode, Node nextNode)
@@ -120,7 +155,7 @@ namespace ConvexHull
                 var positions = nodeLengthPairs.Keys.Where(p => p.Position.Y <= prevNode.Position.Y && p.Position.X >= prevNode.Position.X && p.Position.X < curNode.Position.X).Select(p => p.Position);
                 var points = new ConcurrentQueue<Point>(positions);
 
-                ExecuteThread(points.Count, () => Split(points, lowerHalf, null, prevNode, curNode));
+                Split(points, lowerHalf, null, prevNode, curNode);
                 if (lowerHalf.Count > 0)
                 {
                     FindMinY(lowerHalf, prevNode, curNode);
@@ -132,7 +167,7 @@ namespace ConvexHull
                 positions = nodeLengthPairs.Keys.Where(p => p.Position.Y <= nextNode.Position.Y && p.Position.X <= nextNode.Position.X && p.Position.X > curNode.Position.X).Select(p => p.Position);
                 points = new ConcurrentQueue<Point>(positions);
 
-                ExecuteThread(points.Count, () => Split(points, lowerHalf, null, curNode, nextNode));
+                Split(points, lowerHalf, null, curNode, nextNode);
                 if (lowerHalf.Count > 0)
                 {
                     FindMinY(lowerHalf, curNode, nextNode);
@@ -157,7 +192,7 @@ namespace ConvexHull
                 var positions = nodeLengthPairs.Keys.Where(p => p.Position.Y > prevNode.Position.Y && p.Position.X <= prevNode.Position.X && p.Position.X > curNode.Position.X).Select(p => p.Position);
                 var points = new ConcurrentQueue<Point>(positions);
 
-                ExecuteThread(points.Count, () => Split(points, null, upperHalf, prevNode, curNode));
+                Split(points, null, upperHalf, prevNode, curNode);
                 if (upperHalf.Count > 0)
                 {
                     FindMaxY(upperHalf, prevNode, curNode);
@@ -168,7 +203,7 @@ namespace ConvexHull
                 positions = nodeLengthPairs.Keys.Where(p => p.Position.Y > nextNode.Position.Y && p.Position.X >= nextNode.Position.X && p.Position.X < curNode.Position.X).Select(p => p.Position);
                 points = new ConcurrentQueue<Point>(positions);
 
-                ExecuteThread(points.Count, () => Split(points, null, upperHalf, curNode, nextNode));
+                Split(points, null, upperHalf, curNode, nextNode);
                 if (upperHalf.Count > 0)
                 {
                     FindMaxY(upperHalf, curNode, nextNode);
@@ -178,16 +213,20 @@ namespace ConvexHull
 
         private void FindExtremeY(ConcurrentQueue<Node> list, ConcurrentDictionary<Node, float> nodeLengthPairs, Node prevNode, Node nextNode)
         {
-            ExecuteThread(list.Count, () => CalculateNodeLengthPairs(list, prevNode, nextNode, nodeLengthPairs));
+            CalculateNodeLengthPairs(list, prevNode, nextNode, nodeLengthPairs);
         }
 
         private void CalculateNodeLengthPairs(ConcurrentQueue<Node> nodeList, Node prevNode, Node nextNode, ConcurrentDictionary<Node, float> nodeLengthPairs)
         {
-            Node curNode = null;
-            nodeList.TryDequeue(out curNode);
-            
-            float length = GetNormalVectorLength(prevNode.Position, nextNode.Position, curNode.Position);
-            nodeLengthPairs.AddOrUpdate(curNode, length, (n, f) => length);            
+            var count = nodeList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Node curNode = null;
+                nodeList.TryDequeue(out curNode);
+
+                float length = GetNormalVectorLength(prevNode.Position, nextNode.Position, curNode.Position);
+                nodeLengthPairs.AddOrUpdate(curNode, length, (n, f) => length);
+            }
         }
 
         private int GetNormalVectorLength(Point A, Point B, Point C)
