@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,6 +22,9 @@ namespace ConvexHull
 
         public void Execute()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             Node leftNode = null, rightNode = null;
 
             FindMinMaxX(_graph.Points, out leftNode, out rightNode);
@@ -38,7 +42,9 @@ namespace ConvexHull
             FindMinY(lowerHalf, leftNode, rightNode);
             FindMaxY(upperHalf, rightNode, leftNode);
 
-            Console.WriteLine();
+            watch.Stop();
+
+            Console.WriteLine("Duration {0}", watch.Elapsed);
         }
 
         private void ExecuteThread(int maxThreads, Action action)
