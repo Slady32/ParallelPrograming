@@ -39,14 +39,14 @@ namespace ConvexHull
             e.Graphics.DrawLine(pen, Origin, new Point(Origin.X, range + Origin.Y));
 
             // Qualifiers
-            for (int i = 0; i <= range; i += 50)
+            for (int i = 0; i <= range; i += 25)
             {
                 var startPoint = new Point(Origin.X + i, Origin.Y);
                 var endPoint = new Point(Origin.X + i, Origin.Y - 10);
                 e.Graphics.DrawLine(pen, startPoint, endPoint);
             }
 
-            for (int i = 0; i <= range; i += 50)
+            for (int i = 0; i <= range; i += 25)
             {
                 var startPoint = new Point(Origin.X, Origin.Y + i);
                 var endPoint = new Point(Origin.X - 10, Origin.Y + i);
@@ -58,21 +58,21 @@ namespace ConvexHull
 
         private void PaintBaseLine(Node node1, Node node2, PaintEventArgs e, Pen pen)
         {
-            var startPoint = new Point(node1.Position.X + Origin.X, node1.Position.Y + Origin.Y);
-            var endPoint = new Point(node2.Position.X + Origin.X, node2.Position.Y + Origin.Y);
+            var startPoint = new Point(node1.Position.X + Origin.X + 3, node1.Position.Y + Origin.Y + 3);
+            var endPoint = new Point(node2.Position.X + Origin.X + 3, node2.Position.Y + Origin.Y + 3);
 
             e.Graphics.DrawLine(pen, startPoint, endPoint);
         }
 
         private void PaintPoints(Point point, PaintEventArgs e, Pen pen)
         {
-            e.Graphics.DrawRectangle(pen, Origin.X + point.X, Origin.Y + point.Y, 5f, 5f);
+            e.Graphics.DrawEllipse(pen, Origin.X + point.X, Origin.Y + point.Y, 6f, 6f);
         }
 
         private void PaintNode(Node node, PaintEventArgs e, Pen pen)
         {
-            var startPoint = new Point(node.Position.X + Origin.X, node.Position.Y + Origin.Y);
-            var endPoint = new Point(node.Next.Position.X + Origin.X, node.Next.Position.Y + Origin.Y);
+            var startPoint = new Point(node.Position.X + Origin.X + 3, node.Position.Y + Origin.Y + 3);
+            var endPoint = new Point(node.Next.Position.X + Origin.X + 3, node.Next.Position.Y + Origin.Y + 3);
 
             e.Graphics.DrawLine(pen, startPoint, endPoint);
         }

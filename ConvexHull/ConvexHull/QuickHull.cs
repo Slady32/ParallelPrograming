@@ -14,7 +14,7 @@ namespace ConvexHull
     public class QuickHull : IHull
     {
         private readonly Graph _graph;
-        
+
         public QuickHull(Graph graph)
         {
             _graph = graph;
@@ -190,20 +190,26 @@ namespace ConvexHull
         {
             foreach (var curNode in nodeList)
             {
-                float length = GetNormalVectorLength(prevNode.Position, nextNode.Position, curNode.Position);
+                float length = GetTriangleHeight(prevNode.Position, nextNode.Position, curNode.Position);
                 nodeLengthPairs.Add(curNode, length);
             }
         }
 
-        private int GetNormalVectorLength(Point A, Point B, Point C)
+        private float GetTriangleHeight(Point A, Point B, Point C)
         {
-            int ABx = Math.Max(B.X, A.X) - Math.Min(B.X, A.X);
-            int ABy = Math.Max(B.Y, A.Y) - Math.Min(A.Y, B.Y);
-            int ACy = Math.Max(A.Y, C.Y) - Math.Min(C.Y, A.Y);
-            int ACx = Math.Max(A.X, C.X) - Math.Min(C.X, A.X);
-            int lengthNormalVector = ABx * ACy - ABy * ACx;
+            var dAB = GetDistance(A, B);
+            var dAC = GetDistance(A, C);
+            var dBC = GetDistance(B, C);
+            var betaAngle = Math.Acos(((Math.Pow(dAB, 2) + Math.Pow(dBC, 2) -  Math.Pow(dAC, 2)) / (2 * dAB * dBC)));
 
-            return (lengthNormalVector < 0) ? -lengthNormalVector : lengthNormalVector;
+            var retVal = (float)(dBC * Math.Sin(betaAngle));
+
+            return (retVal < 0) ? -retVal : retVal;
+        }
+
+        private double GetDistance(Point A, Point B)
+        {
+            return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
         }
     }
 }
