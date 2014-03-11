@@ -75,15 +75,15 @@ namespace ConvexHull
                 return;
             }
 
-            // insert wheter >= y or < y
+            // Calculate Differences
             int xDif = rightNode.Position.X - leftNode.Position.X;
-            int yDif = Math.Max(leftNode.Position.Y, rightNode.Position.Y) - Math.Min(leftNode.Position.Y, rightNode.Position.Y);
-            // == steigung
+            int yDif = leftNode.Position.Y -rightNode.Position.Y;
+            
+            // == Steigung
             float slope = (1f * yDif) / (1f * xDif);
 
-            var x = Math.Max(rightNode.Position.X, curNode.Position.X) - Math.Min(rightNode.Position.X, curNode.Position.X);
-            float yHypo = x * slope + rightNode.Position.Y;
-            // TODO Berechnung stimmt noch nicht ganz!!!!
+            float yHypo = (curNode.Position.X - leftNode.Position.X) * (slope * -1) + leftNode.Position.Y; // TODO Berechnung stimmt noch nicht ganz!!!!
+
             if (curNode.Position.Y >= yHypo)
             {
                 if (upperHalf != null)
