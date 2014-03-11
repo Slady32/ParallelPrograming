@@ -122,7 +122,7 @@ namespace ConvexHull
                 var lowerHalf = new List<Node>();
 
                 // all between prev and cur point
-                var positions = nodeLengthPairs.Keys.Where(p => p.Position.Y <= prevNode.Position.Y && p.Position.X >= prevNode.Position.X && p.Position.X < curNode.Position.X).Select(p => p.Position);
+                var positions = nodeLengthPairs.Keys.Where(p => p.Position.X < curNode.Position.X).Select(p => p.Position);
                 var points = new List<Point>(positions);
 
                 ExecuteSplit(points, lowerHalf, null, prevNode, curNode);
@@ -134,7 +134,7 @@ namespace ConvexHull
                 // all between cur and next point
                 lowerHalf = new List<Node>();
 
-                positions = nodeLengthPairs.Keys.Where(p => p.Position.Y <= nextNode.Position.Y && p.Position.X <= nextNode.Position.X && p.Position.X > curNode.Position.X).Select(p => p.Position);
+                positions = nodeLengthPairs.Keys.Where(p => p.Position.X > curNode.Position.X).Select(p => p.Position);
                 points = new List<Point>(positions);
 
                 ExecuteSplit(points, lowerHalf, null, curNode, nextNode);
@@ -159,7 +159,7 @@ namespace ConvexHull
 
                 var upperHalf = new List<Node>();
                 // all between prev and cur point
-                var positions = nodeLengthPairs.Keys.Where(p => p.Position.Y > prevNode.Position.Y && p.Position.X <= prevNode.Position.X && p.Position.X > curNode.Position.X).Select(p => p.Position);
+                var positions = nodeLengthPairs.Keys.Where(p => p.Position.X > curNode.Position.X).Select(p => p.Position);
                 var points = new List<Point>(positions);
 
                 ExecuteSplit(points, null, upperHalf, prevNode, curNode);
@@ -170,7 +170,7 @@ namespace ConvexHull
 
                 upperHalf = new List<Node>();
                 // all between cur and next point
-                positions = nodeLengthPairs.Keys.Where(p => p.Position.Y > nextNode.Position.Y && p.Position.X >= nextNode.Position.X && p.Position.X < curNode.Position.X).Select(p => p.Position);
+                positions = nodeLengthPairs.Keys.Where(p => p.Position.X < curNode.Position.X).Select(p => p.Position);
                 points = new List<Point>(positions);
 
                 ExecuteSplit(points, null, upperHalf, curNode, nextNode);

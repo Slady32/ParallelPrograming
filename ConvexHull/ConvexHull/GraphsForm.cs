@@ -61,7 +61,7 @@ namespace ConvexHull
 
         private void GenerateRandomGraph()
         {
-            var graph = new GraphFactory().GenerateGraphWithRandoms(new Point(100, 100), 15);
+            var graph = new GraphFactory().GenerateGraphWithRandoms(new Point(100, 100), 50);
 
             Graphs = new List<IPainter>
             {
