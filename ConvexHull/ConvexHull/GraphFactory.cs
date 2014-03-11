@@ -17,11 +17,11 @@ namespace ConvexHull
             {
                 if (i == 0)
                 {
-                    graph.Points.Add(new Point(graph.Origin.X - randomizor.Next(1, 4) * 25, graph.Origin.X - randomizor.Next(1, 4) * 25));
+                    graph.Points.Add(new Point(randomizor.Next(0, 200), randomizor.Next(0, 200)));
                 }
                 else
                 {
-                    graph.Points.Add(new Point(graph.Origin.X + randomizor.Next(-4, 4) * 25, graph.Origin.X + randomizor.Next(-4, 4) * 25));
+                    graph.Points.Add(new Point(randomizor.Next(0, 200), randomizor.Next(0, 200)));
                 }
             }
 

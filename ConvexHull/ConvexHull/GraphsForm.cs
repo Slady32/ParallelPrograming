@@ -21,21 +21,21 @@ namespace ConvexHull
             InitializeComponent();
 
             var graphFactory = new GraphFactory();
-            //var pointList = new List<Point>
-            //{
-            //    new Point(5, 62),
-            //    new Point(50, 25),
-            //    new Point(99, 56),
-            //    new Point(50, 125),
-            //    new Point(100, 100),
-            //    new Point(15, 130),
-            //    new Point(80, 135),
-            //    new Point(50, 150),
-            //    new Point(0, 100),
-            //    new Point(50, 50)
-            //};
+            var pointList = new List<Point>
+            {
+                new Point(5, 62),
+                new Point(50, 25),
+                new Point(99, 56),
+                new Point(50, 125),
+                new Point(100, 100),
+                new Point(15, 130),
+                new Point(80, 135),
+                new Point(50, 150),
+                new Point(0, 100),
+                new Point(50, 50)
+            };
             //var graph = graphFactory.GenerateGraphWithList(new Point(100, 100), pointList);
-            var graph = graphFactory.GenerateGraphWithRandoms(new Point(100, 100), 10);
+            var graph = graphFactory.GenerateGraphWithRandoms(new Point(100, 100), 50);
 
             Graphs = new List<IPainter>
             {
