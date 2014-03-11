@@ -68,6 +68,15 @@ namespace ConvexHull
                 graph
             };
 
+            var sb = new StringBuilder();
+            foreach (var point in graph.Points)
+            {
+                sb.Append(string.Format("new Point({0}, {1}),{2}", point.X, point.Y, Environment.NewLine));
+            }
+
+            sb.Remove(sb.Length - 3, 3);
+            textBox1.Text = sb.ToString();
+
             _hull = new QuickHull(graph);
             _hull.Execute();
         }
