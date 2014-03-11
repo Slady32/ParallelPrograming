@@ -20,5 +20,10 @@ namespace ConvexHull
             Position = position;
             Id = Guid.NewGuid();
         }
+
+        public override string ToString()
+        {
+            return Position.ToString();
+        }
     }
 }
