@@ -16,5 +16,15 @@ namespace ConvexHull
             SplitLowerHalf(points, lowerHalf, upperHalf, leftNode, rightNode);
             SplitUpperHalf(points, lowerHalf, upperHalf, leftNode, rightNode);
         }
+
+        protected override void ExecuteFindMinY(IList<Node> list, Node prevNode, Node nextNode)
+        {
+            FindMinY(list, prevNode, nextNode);
+        }
+
+        protected override void ExecuteFindMaxY(IList<Node> list, Node prevNode, Node nextNode)
+        {
+            FindMaxY(list, prevNode, nextNode);
+        }
     }
 }

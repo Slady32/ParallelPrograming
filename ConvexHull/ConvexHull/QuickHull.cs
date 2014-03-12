@@ -120,6 +120,9 @@ namespace ConvexHull
             }
         }
 
+        protected abstract void ExecuteFindMinY(IList<Node> list, Node prevNode, Node nextNode);
+        protected abstract void ExecuteFindMaxY(IList<Node> list, Node prevNode, Node nextNode);
+
         protected void FindMinY(IList<Node> list, Node prevNode, Node nextNode)
         {
             var nodeLengthPairs = new Dictionary<Node, float>();
