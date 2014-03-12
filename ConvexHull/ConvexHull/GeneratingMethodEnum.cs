@@ -4,8 +4,8 @@ namespace ConvexHull
     [Flags]
     public enum GeneratingMethodEnum
     {
-        QuickHull,
         SerialQuickHull,
+        OneThreadPerSplitQuickHull,
         SerialGiftWrapping
     }
 }

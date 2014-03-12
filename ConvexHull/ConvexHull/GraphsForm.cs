@@ -14,17 +14,18 @@ namespace ConvexHull
     {
         private IList<IPainter> Graphs { get; set; }
 
-        private IHull _hull;
+        private IList<IHull> Hulls { get; set; }
 
         private Graph _graph;
 
         public GraphsForm()
         {
             Graphs = new List<IPainter>();
+            Hulls = new List<IHull>();
             InitializeComponent();
 
-            //InitializeGraph(new Point(50,50), GeneratingMethodEnum.QuickHull , false);
-            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.SerialQuickHull, false);
+            InitializeGraph(new Point(50, 50), GeneratingMethodEnum.SerialQuickHull, false);
+            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.OneThreadPerSplitQuickHull, false);
             //InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull, false);
             //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull, false);
 
@@ -62,25 +63,20 @@ namespace ConvexHull
             }
             Graphs.Add(_graph);
 
-            //var sb = new StringBuilder();
-            //foreach (var point in _graph.Points)
-            //{
-            //    sb.Append(string.Format("new Point({0}, {1}),{2}", point.X, point.Y, Environment.NewLine));
-            //}
-
-            //sb.Remove(sb.Length - 3, 3);
-            //textBox1.Text = sb.ToString();
+            IHull hull = null;
             switch (generatingMethod)
             {
-                case GeneratingMethodEnum.QuickHull:
-                    _hull = new SerialQuickHull(_graph);
-                    _hull.Done += Done;
-                    _hull.Execute();
-                    break;
                 case GeneratingMethodEnum.SerialQuickHull:
-                    _hull = new SerialQuickHull(_graph); // Change to SereialQuickHull
-                    _hull.Done += Done;
-                    _hull.Execute();
+                    hull =  new SerialQuickHull(_graph);
+                    hull.Done += Done;
+                    hull.Execute();
+                    Hulls.Add(hull);
+                    break;
+                case GeneratingMethodEnum.OneThreadPerSplitQuickHull:
+                    hull = new OneThreadPerSplitQuickHull(_graph);
+                    hull.Done += Done;
+                    hull.Execute();
+                    Hulls.Add(hull);
                     break;
                 default:
                     break;
@@ -104,11 +100,12 @@ namespace ConvexHull
         private void GenGraph_Click(object sender, EventArgs e)
         {
             Graphs.Clear();
+            textBox1.Text = string.Empty;
 
-            InitializeGraph(new Point(50, 50), GeneratingMethodEnum.QuickHull);
-            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.SerialQuickHull);
-            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull);
-            InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull);
+            InitializeGraph(new Point(50, 50), GeneratingMethodEnum.SerialQuickHull);
+            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.OneThreadPerSplitQuickHull);
+            //InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull);
+            //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull);
             Invalidate();
         }
 
