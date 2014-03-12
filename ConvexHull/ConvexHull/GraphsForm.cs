@@ -23,10 +23,10 @@ namespace ConvexHull
             Graphs = new List<IPainter>();
             InitializeComponent();
 
-            InitializeGraph(new Point(50,50), GeneratingMethodEnum.QuickHull , false);
+            //InitializeGraph(new Point(50,50), GeneratingMethodEnum.QuickHull , false);
             InitializeGraph(new Point(400, 50), GeneratingMethodEnum.SerialQuickHull, false);
-            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull, false);
-            InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull, false);
+            //InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull, false);
+            //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull, false);
 
         }
 
@@ -62,22 +62,24 @@ namespace ConvexHull
             }
             Graphs.Add(_graph);
 
-            var sb = new StringBuilder();
-            foreach (var point in _graph.Points)
-            {
-                sb.Append(string.Format("new Point({0}, {1}),{2}", point.X, point.Y, Environment.NewLine));
-            }
+            //var sb = new StringBuilder();
+            //foreach (var point in _graph.Points)
+            //{
+            //    sb.Append(string.Format("new Point({0}, {1}),{2}", point.X, point.Y, Environment.NewLine));
+            //}
 
-            sb.Remove(sb.Length - 3, 3);
-            textBox1.Text = sb.ToString();
+            //sb.Remove(sb.Length - 3, 3);
+            //textBox1.Text = sb.ToString();
             switch (generatingMethod)
             {
                 case GeneratingMethodEnum.QuickHull:
                     _hull = new SerialQuickHull(_graph);
+                    _hull.Done += Done;
                     _hull.Execute();
                     break;
                 case GeneratingMethodEnum.SerialQuickHull:
                     _hull = new SerialQuickHull(_graph); // Change to SereialQuickHull
+                    _hull.Done += Done;
                     _hull.Execute();
                     break;
                 default:
@@ -108,6 +110,11 @@ namespace ConvexHull
             InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull);
             InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull);
             Invalidate();
+        }
+
+        private void Done(object sender, TimeSpan elapsed)
+        {
+            textBox1.Text += sender.GetType().Name + Environment.NewLine + elapsed.ToString() + Environment.NewLine;
         }
     }
 }
