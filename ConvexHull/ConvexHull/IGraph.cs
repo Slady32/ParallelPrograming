@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ConvexHull
 {
-    public interface IHull
+    public interface IGraph
     {
-        IGraph Graph { get; }
-        void Execute();
-        event EventHandler<TimeSpan> Done;
+        IList<Node> HullNodes { get; set; }
+        IList<Point> Points { get; set; }
     }
 }

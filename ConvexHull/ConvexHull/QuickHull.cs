@@ -11,11 +11,20 @@ using System.Threading.Tasks;
 
 namespace ConvexHull
 {
-    public class QuickHull : IHull
+    public abstract class QuickHull : IHull
     {
-        private readonly Graph _graph;
+        public IGraph Graph
+        {
+            get
+            {
+                return _graph;
+            }
+        }
 
-        public QuickHull(Graph graph)
+        private readonly IGraph _graph;
+        public event EventHandler<TimeSpan> Done;
+
+        public QuickHull(IGraph graph)
         {
             _graph = graph;
         }
@@ -43,10 +52,10 @@ namespace ConvexHull
 
             watch.Stop();
 
-            Console.WriteLine("Duration {0}", watch.Elapsed);
+            OnDone(watch.Elapsed);
         }
 
-        private void ExecuteThread(int maxThreads, Action action)
+        protected void ExecuteThread(int maxThreads, Action action)
         {
             var threads = Enumerable.Range(0, maxThreads).Select(t => new Thread(() => action())).ToList();
 
@@ -54,7 +63,7 @@ namespace ConvexHull
             threads.ForEach(t => t.Join());
         }
 
-        private void FindMinMaxX(IList<Point> points, out Node leftNode, out Node rightNode)
+        protected void FindMinMaxX(IList<Point> points, out Node leftNode, out Node rightNode)
         {
             leftNode = new Node(points.FirstOrDefault(p => p.X == points.Min(po => po.X)));
             rightNode = new Node(points.FirstOrDefault(p => p.X == points.Max(po => po.X)));
@@ -63,13 +72,19 @@ namespace ConvexHull
             rightNode.Next = leftNode;
         }
 
-        private void ExecuteSplit(IList<Point> points, IList<Node> lowerHalf, IList<Node> upperHalf, Node leftNode, Node rightNode)
+        protected abstract void ExecuteSplit(IList<Point> points, IList<Node> lowerHalf, IList<Node> upperHalf, Node leftNode, Node rightNode);
+
+        protected void SplitLowerHalf(IList<Point> points, IList<Node> lowerHalf, IList<Node> upperHalf, Node leftNode, Node rightNode)
         {
-            ExecuteThread(1, () => Split(points.Take(points.Count / 2).ToList(), lowerHalf, upperHalf, leftNode, rightNode));
-            ExecuteThread(1, () => Split(points.Skip(points.Count / 2).ToList(), lowerHalf, upperHalf, leftNode, rightNode));
+            Split(points.Take(points.Count / 2).ToList(), lowerHalf, upperHalf, leftNode, rightNode);
         }
 
-        private void Split(IList<Point> points, IList<Node> lowerHalf, IList<Node> upperHalf, Node leftNode, Node rightNode)
+        protected void SplitUpperHalf(IList<Point> points, IList<Node> lowerHalf, IList<Node> upperHalf, Node leftNode, Node rightNode)
+        {
+            Split(points.Skip(points.Count / 2).ToList(), lowerHalf, upperHalf, leftNode, rightNode);
+        }
+
+        protected void Split(IList<Point> points, IList<Node> lowerHalf, IList<Node> upperHalf, Node leftNode, Node rightNode)
         {
             // calculate y for x-value
             foreach (var point in points)
@@ -105,7 +120,7 @@ namespace ConvexHull
             }
         }
 
-        private void FindMinY(IList<Node> list, Node prevNode, Node nextNode)
+        protected void FindMinY(IList<Node> list, Node prevNode, Node nextNode)
         {
             var nodeLengthPairs = new Dictionary<Node, float>();
 
@@ -145,7 +160,7 @@ namespace ConvexHull
             }
         }
 
-        private void FindMaxY(IList<Node> list, Node prevNode, Node nextNode)
+        protected void FindMaxY(IList<Node> list, Node prevNode, Node nextNode)
         {
             var nodeLengthPairs = new Dictionary<Node, float>();
 
@@ -181,14 +196,9 @@ namespace ConvexHull
             }
         }
 
-        private void FindExtremeY(IList<Node> list, Dictionary<Node, float> nodeLengthPairs, Node prevNode, Node nextNode)
+        protected void FindExtremeY(IList<Node> list, Dictionary<Node, float> nodeLengthPairs, Node prevNode, Node nextNode)
         {
-            CalculateNodeLengthPairs(list, prevNode, nextNode, nodeLengthPairs);
-        }
-
-        private void CalculateNodeLengthPairs(IList<Node> nodeList, Node prevNode, Node nextNode, Dictionary<Node, float> nodeLengthPairs)
-        {
-            foreach (var curNode in nodeList)
+            foreach (var curNode in list)
             {
                 float length = GetTriangleHeight(prevNode.Position, nextNode.Position, curNode.Position);
                 nodeLengthPairs.Add(curNode, length);
@@ -200,7 +210,7 @@ namespace ConvexHull
             var dAB = GetDistance(A, B);
             var dAC = GetDistance(A, C);
             var dBC = GetDistance(B, C);
-            var betaAngle = Math.Acos(((Math.Pow(dAB, 2) + Math.Pow(dBC, 2) -  Math.Pow(dAC, 2)) / (2 * dAB * dBC)));
+            var betaAngle = Math.Acos(((Math.Pow(dAB, 2) + Math.Pow(dBC, 2) - Math.Pow(dAC, 2)) / (2 * dAB * dBC)));
 
             var retVal = (float)(dBC * Math.Sin(betaAngle));
 
@@ -210,6 +220,15 @@ namespace ConvexHull
         private double GetDistance(Point A, Point B)
         {
             return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
+        }
+
+        private void OnDone(TimeSpan elapsed)
+        {
+            var temp = Done;
+            if (temp != null)
+            {
+                temp(this, elapsed);
+            }
         }
     }
 }

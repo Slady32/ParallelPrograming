@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace ConvexHull
 {
-    public class Graph : IPainter
+    public class Graph : IPainter, IGraph
     {
         public Guid Id { get; set; }
         public Point Origin { get; private set; }

@@ -73,11 +73,11 @@ namespace ConvexHull
             switch (generatingMethod)
             {
                 case GeneratingMethodEnum.QuickHull:
-                    _hull = new QuickHull(_graph);
+                    _hull = new SerialQuickHull(_graph);
                     _hull.Execute();
                     break;
                 case GeneratingMethodEnum.SerialQuickHull:
-                    _hull = new QuickHull(_graph); // Change to SereialQuickHull
+                    _hull = new SerialQuickHull(_graph); // Change to SereialQuickHull
                     _hull.Execute();
                     break;
                 default:
