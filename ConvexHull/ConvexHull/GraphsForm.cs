@@ -23,14 +23,14 @@ namespace ConvexHull
             Graphs = new List<IPainter>();
             InitializeComponent();
 
-            InitializeGraph(new Point(50,50), "QuickHull" , false);
-            InitializeGraph(new Point(400, 50), "QuickHull", false);
-            InitializeGraph(new Point(50, 400), "QuickHull", false);
-            InitializeGraph(new Point(400, 400), "QuickHull", false);
+            InitializeGraph(new Point(50,50), GeneratingMethodEnum.QuickHull , false);
+            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.SerialQuickHull, false);
+            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull, false);
+            InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull, false);
 
         }
 
-        private void InitializeGraph(Point origin, string generatingMethod, bool generateRandom = true)
+        private void InitializeGraph(Point origin, GeneratingMethodEnum generatingMethod, bool generateRandom = true)
         {
             if (!generateRandom)
             {
@@ -72,11 +72,11 @@ namespace ConvexHull
             textBox1.Text = sb.ToString();
             switch (generatingMethod)
             {
-                case "QuickHull":
+                case GeneratingMethodEnum.QuickHull:
                     _hull = new QuickHull(_graph);
                     _hull.Execute();
                     break;
-                case "SerialQuickHull":
+                case GeneratingMethodEnum.SerialQuickHull:
                     _hull = new QuickHull(_graph); // Change to SereialQuickHull
                     _hull.Execute();
                     break;
@@ -103,10 +103,10 @@ namespace ConvexHull
         {
             Graphs.Clear();
 
-            InitializeGraph(new Point(50, 50), "QuickHull");
-            InitializeGraph(new Point(400, 50), "QuickHull");
-            InitializeGraph(new Point(50, 400), "QuickHull");
-            InitializeGraph(new Point(400, 400), "QuickHull");
+            InitializeGraph(new Point(50, 50), GeneratingMethodEnum.QuickHull);
+            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.SerialQuickHull);
+            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull);
+            InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull);
             Invalidate();
         }
     }

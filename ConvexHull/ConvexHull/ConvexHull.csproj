@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeneratingMethodEnum.cs" />
     <Compile Include="IHull.cs" />
     <Compile Include="QuickHull.cs" />
     <Compile Include="Graph.cs" />
