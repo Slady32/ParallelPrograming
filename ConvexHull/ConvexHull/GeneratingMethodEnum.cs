@@ -5,6 +5,7 @@ namespace ConvexHull
     public enum GeneratingMethodEnum
     {
         QuickHull,
-        SerialQuickHull
+        SerialQuickHull,
+        SerialGiftWrapping
     }
 }

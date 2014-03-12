@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="GeneratingMethodEnum.cs" />
     <Compile Include="IHull.cs" />
-    <Compile Include="IGraph.cs" />
     <Compile Include="QuickHull.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="GraphFactory.cs" />
@@ -61,7 +60,7 @@
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerialQuickHull.cs" />
+    <Compile Include="SerialGiftWrapping.cs" />
     <EmbeddedResource Include="GraphsForm.resx">
       <DependentUpon>GraphsForm.cs</DependentUpon>
     </EmbeddedResource>
