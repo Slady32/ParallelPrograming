@@ -26,7 +26,7 @@ namespace ConvexHull
 
             InitializeGraph(new Point(50, 50), GeneratingMethodEnum.SerialQuickHull, false);
             InitializeGraph(new Point(400, 50), GeneratingMethodEnum.OneThreadPerSplitQuickHull, false);
-            //InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull, false);
+            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.OneThreadSplitQuickHull, false);
             //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull, false);
 
         }
@@ -68,19 +68,20 @@ namespace ConvexHull
             {
                 case GeneratingMethodEnum.SerialQuickHull:
                     hull =  new SerialQuickHull(_graph);
-                    hull.Done += Done;
-                    hull.Execute();
-                    Hulls.Add(hull);
                     break;
                 case GeneratingMethodEnum.OneThreadPerSplitQuickHull:
                     hull = new OneThreadPerSplitQuickHull(_graph);
-                    hull.Done += Done;
-                    hull.Execute();
-                    Hulls.Add(hull);
+                    break;
+                case GeneratingMethodEnum.OneThreadSplitQuickHull:
+                    hull = new OneThreadSplitQuickHull(_graph);
                     break;
                 default:
                     break;
             }
+
+            hull.Done += Done;
+            hull.Execute();
+            Hulls.Add(hull);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -91,10 +92,7 @@ namespace ConvexHull
 
         private void DrawGraph(PaintEventArgs e)
         {
-            foreach (var graph in Graphs)
-            {
-                graph.Paint(e);
-            }
+            Graphs.ForEach(g => g.Paint(e));
         }
 
         private void GenGraph_Click(object sender, EventArgs e)
@@ -104,7 +102,7 @@ namespace ConvexHull
 
             InitializeGraph(new Point(50, 50), GeneratingMethodEnum.SerialQuickHull);
             InitializeGraph(new Point(400, 50), GeneratingMethodEnum.OneThreadPerSplitQuickHull);
-            //InitializeGraph(new Point(50, 400), GeneratingMethodEnum.QuickHull);
+            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.OneThreadSplitQuickHull);
             //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull);
             Invalidate();
         }
