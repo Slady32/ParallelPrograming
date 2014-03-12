@@ -27,7 +27,7 @@ namespace ConvexHull
             InitializeGraph(new Point(50, 100), GeneratingMethodEnum.SerialQuickHull, false);
             InitializeGraph(new Point(400, 100), GeneratingMethodEnum.OneThreadPerSplitQuickHull, false);
             InitializeGraph(new Point(50, 450), GeneratingMethodEnum.OneThreadSplitQuickHull, false);
-            //InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialQuickHull, false);
+            InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialGiftWrapping, false);
 
         }
 
@@ -75,6 +75,9 @@ namespace ConvexHull
                 case GeneratingMethodEnum.OneThreadSplitQuickHull:
                     hull = new OneThreadSplitQuickHull((Graph)Graphs.Last());
                     break;
+                case GeneratingMethodEnum.SerialGiftWrapping:
+                    hull = new SerialGiftWrapping((Graph)Graphs.Last());
+                    break;
                 default:
                     break;
             }
@@ -104,7 +107,7 @@ namespace ConvexHull
             InitializeGraph(new Point(50, 100), GeneratingMethodEnum.SerialQuickHull);
             InitializeGraph(new Point(400, 100), GeneratingMethodEnum.OneThreadPerSplitQuickHull);
             InitializeGraph(new Point(50, 450), GeneratingMethodEnum.OneThreadSplitQuickHull);
-            //InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialQuickHull);
+            InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialGiftWrapping);
             Invalidate();
         }
 
