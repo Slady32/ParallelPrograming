@@ -14,6 +14,7 @@ namespace ConvexHull
         public Point Origin { get; private set; }
         public IList<Point> Points { get; set; }
         public IList<Node> HullNodes { get; set; }
+        public string Name { get; set; }
 
         public Graph(Point origin)
         {
@@ -33,6 +34,8 @@ namespace ConvexHull
 
         private void PaintCoordinateSystem(PaintEventArgs e, Pen pen)
         {
+            e.Graphics.DrawString(Name, new Font("Arial", 12), new SolidBrush(Color.Black), new PointF(Origin.X, Origin.Y - 50));
+
             var range = 300;
             // Lines
             e.Graphics.DrawLine(pen, Origin, new Point(range + Origin.X, Origin.Y));

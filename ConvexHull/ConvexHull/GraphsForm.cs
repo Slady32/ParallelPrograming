@@ -24,10 +24,10 @@ namespace ConvexHull
             Hulls = new List<IHull>();
             InitializeComponent();
 
-            InitializeGraph(new Point(50, 50), GeneratingMethodEnum.SerialQuickHull, false);
-            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.OneThreadPerSplitQuickHull, false);
-            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.OneThreadSplitQuickHull, false);
-            //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull, false);
+            InitializeGraph(new Point(50, 100), GeneratingMethodEnum.SerialQuickHull, false);
+            InitializeGraph(new Point(400, 100), GeneratingMethodEnum.OneThreadPerSplitQuickHull, false);
+            InitializeGraph(new Point(50, 450), GeneratingMethodEnum.OneThreadSplitQuickHull, false);
+            //InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialQuickHull, false);
 
         }
 
@@ -67,18 +67,19 @@ namespace ConvexHull
             switch (generatingMethod)
             {
                 case GeneratingMethodEnum.SerialQuickHull:
-                    hull =  new SerialQuickHull(_graph);
+                    hull = new SerialQuickHull((Graph) Graphs.Last());
                     break;
                 case GeneratingMethodEnum.OneThreadPerSplitQuickHull:
-                    hull = new OneThreadPerSplitQuickHull(_graph);
+                    hull = new OneThreadPerSplitQuickHull((Graph)Graphs.Last());
                     break;
                 case GeneratingMethodEnum.OneThreadSplitQuickHull:
-                    hull = new OneThreadSplitQuickHull(_graph);
+                    hull = new OneThreadSplitQuickHull((Graph)Graphs.Last());
                     break;
                 default:
                     break;
             }
 
+            _graph.Name = generatingMethod.ToString();
             hull.Done += Done;
             hull.Execute();
             Hulls.Add(hull);
@@ -100,10 +101,10 @@ namespace ConvexHull
             Graphs.Clear();
             textBox1.Text = string.Empty;
 
-            InitializeGraph(new Point(50, 50), GeneratingMethodEnum.SerialQuickHull);
-            InitializeGraph(new Point(400, 50), GeneratingMethodEnum.OneThreadPerSplitQuickHull);
-            InitializeGraph(new Point(50, 400), GeneratingMethodEnum.OneThreadSplitQuickHull);
-            //InitializeGraph(new Point(400, 400), GeneratingMethodEnum.SerialQuickHull);
+            InitializeGraph(new Point(50, 100), GeneratingMethodEnum.SerialQuickHull);
+            InitializeGraph(new Point(400, 100), GeneratingMethodEnum.OneThreadPerSplitQuickHull);
+            InitializeGraph(new Point(50, 450), GeneratingMethodEnum.OneThreadSplitQuickHull);
+            //InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialQuickHull);
             Invalidate();
         }
 
