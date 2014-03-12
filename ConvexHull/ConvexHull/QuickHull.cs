@@ -146,7 +146,7 @@ namespace ConvexHull
                 ExecuteSplit(points, lowerHalf, null, prevNode, curNode);
                 if (lowerHalf.Count > 0)
                 {
-                    FindMinY(lowerHalf, prevNode, curNode);
+                    ExecuteFindMinY(lowerHalf, prevNode, curNode);
                 }
 
                 // all between cur and next point
@@ -158,7 +158,7 @@ namespace ConvexHull
                 ExecuteSplit(points, lowerHalf, null, curNode, nextNode);
                 if (lowerHalf.Count > 0)
                 {
-                    FindMinY(lowerHalf, curNode, nextNode);
+                    ExecuteFindMinY(lowerHalf, curNode, nextNode);
                 }
             }
         }
@@ -183,7 +183,7 @@ namespace ConvexHull
                 ExecuteSplit(points, null, upperHalf, prevNode, curNode);
                 if (upperHalf.Count > 0)
                 {
-                    FindMaxY(upperHalf, prevNode, curNode);
+                    ExecuteFindMaxY(upperHalf, prevNode, curNode);
                 }
 
                 upperHalf = new List<Node>();
@@ -194,7 +194,7 @@ namespace ConvexHull
                 ExecuteSplit(points, null, upperHalf, curNode, nextNode);
                 if (upperHalf.Count > 0)
                 {
-                    FindMaxY(upperHalf, curNode, nextNode);
+                    ExecuteFindMaxY(upperHalf, curNode, nextNode);
                 }
             }
         }
