@@ -20,15 +20,18 @@ namespace ConvexHull
 
         public GraphsForm()
         {
+            Graphs = new List<IPainter>();
             InitializeComponent();
 
-            InitializeGraph();
+            InitializeGraph(new Point(50,50), "QuickHull" , false);
+            InitializeGraph(new Point(400, 50), "QuickHull", false);
+            InitializeGraph(new Point(50, 400), "QuickHull", false);
+            InitializeGraph(new Point(400, 400), "QuickHull", false);
 
         }
 
-        private void InitializeGraph()
+        private void InitializeGraph(Point origin, string generatingMethod, bool generateRandom = true)
         {
-            var generateRandom = true;
             if (!generateRandom)
             {
                 var graphFactory = new GraphFactory();
@@ -50,17 +53,14 @@ namespace ConvexHull
                     new Point(184, 164),
                     new Point(183, 79)
                 };
-                    _graph = graphFactory.GenerateGraphWithList(new Point(100, 100), pointList);
+                    _graph = graphFactory.GenerateGraphWithList(origin, pointList);
                     
             }
-            else if (generateRandom)
+            else
             {
-                _graph = new GraphFactory().GenerateGraphWithRandoms(new Point(100, 100), 25);
+                _graph = new GraphFactory().GenerateGraphWithRandoms(origin, 25);
             }
-            Graphs = new List<IPainter>
-                    {
-                        _graph
-                    };
+            Graphs.Add(_graph);
 
             var sb = new StringBuilder();
             foreach (var point in _graph.Points)
@@ -70,9 +70,19 @@ namespace ConvexHull
 
             sb.Remove(sb.Length - 3, 3);
             textBox1.Text = sb.ToString();
-
-            _hull = new QuickHull(_graph);
-            _hull.Execute();
+            switch (generatingMethod)
+            {
+                case "QuickHull":
+                    _hull = new QuickHull(_graph);
+                    _hull.Execute();
+                    break;
+                case "SerialQuickHull":
+                    _hull = new QuickHull(_graph); // Change to SereialQuickHull
+                    _hull.Execute();
+                    break;
+                default:
+                    break;
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -91,7 +101,12 @@ namespace ConvexHull
 
         private void GenGraph_Click(object sender, EventArgs e)
         {
-            InitializeGraph();
+            Graphs.Clear();
+
+            InitializeGraph(new Point(50, 50), "QuickHull");
+            InitializeGraph(new Point(400, 50), "QuickHull");
+            InitializeGraph(new Point(50, 400), "QuickHull");
+            InitializeGraph(new Point(400, 400), "QuickHull");
             Invalidate();
         }
     }

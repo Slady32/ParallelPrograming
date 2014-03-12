@@ -34,11 +34,11 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(607, 12);
+            this.textBox1.Location = new System.Drawing.Point(1007, 12);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(165, 537);
+            this.textBox1.Size = new System.Drawing.Size(165, 737);
             this.textBox1.TabIndex = 0;
             // 
             // GenGraph
@@ -47,7 +47,7 @@
             this.GenGraph.Name = "GenGraph";
             this.GenGraph.Size = new System.Drawing.Size(169, 23);
             this.GenGraph.TabIndex = 1;
-            this.GenGraph.Text = "Generate Graph";
+            this.GenGraph.Text = "Generate Krapfs";
             this.GenGraph.UseVisualStyleBackColor = true;
             this.GenGraph.Click += new System.EventHandler(this.GenGraph_Click);
             // 
@@ -55,7 +55,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 561);
+            this.ClientSize = new System.Drawing.Size(1184, 761);
             this.Controls.Add(this.GenGraph);
             this.Controls.Add(this.textBox1);
             this.Name = "GraphsForm";
