@@ -10,7 +10,7 @@ namespace ConvexHull
 {
     class SerialGiftWrapping : IHull
     {
-        private Graph _graph;
+        private readonly Graph _graph;
         public IGraph Graph
         {
             get
@@ -32,7 +32,7 @@ namespace ConvexHull
             var watch = new Stopwatch();
             watch.Start();
 
-            Point vPointOnHull = _graph.Points.Where(p => p.X == _graph.Points.Min(min => min.X)).First();
+            var vPointOnHull = _graph.Points.First(p => p.X == _graph.Points.Min(min => min.X));
 
             Point vEndpoint;
             do
@@ -40,10 +40,9 @@ namespace ConvexHull
                 _graph.HullNodes.Add(new Node(vPointOnHull));
                 vEndpoint = _graph.Points[0];
 
-                for (int i = 1; i < _graph.Points.Count; i++)
+                for (var i = 1; i < _graph.Points.Count; i++)
                 {
-                    if ((vPointOnHull == vEndpoint)
-                        || (Orientation(vPointOnHull, vEndpoint, _graph.Points[i]) == -1))
+                    if ((vPointOnHull == vEndpoint) || (Orientation(vPointOnHull, vEndpoint, _graph.Points[i]) == -1))
                     {
                         vEndpoint = _graph.Points[i];
                     }
@@ -54,7 +53,7 @@ namespace ConvexHull
             }
             while (vEndpoint != _graph.HullNodes[0].Position);
 
-            for (int i = 0; i < _graph.HullNodes.Count; i++)
+            for (var i = 0; i < _graph.HullNodes.Count; i++)
             {
                 if (i == 0)
                 {
@@ -80,15 +79,13 @@ namespace ConvexHull
 
         private static int Orientation(Point p1, Point p2, Point p)
         {
-            // Determinant
-            int Orin = (p2.X - p1.X) * (p.Y - p1.Y) - (p.X - p1.X) * (p2.Y - p1.Y);
+            var orin = (p2.X - p1.X) * (p.Y - p1.Y) - (p.X - p1.X) * (p2.Y - p1.Y);
+            if (orin > 0)
+                return -1;
+            if (orin < 0)
+                return 1;
 
-            if (Orin > 0)
-                return -1; //          (* Orientaion is to the left-hand side  *)
-            if (Orin < 0)
-                return 1; // (* Orientaion is to the right-hand side *)
-
-            return 0; //  (* Orientaion is neutral aka collinear  *)
+            return 0;
         }
 
         private void OnDone(TimeSpan elapsed)
