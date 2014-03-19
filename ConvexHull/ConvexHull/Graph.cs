@@ -28,7 +28,10 @@ namespace ConvexHull
 
         public void Paint(PaintEventArgs e)
         {
-            Points.ForEach(p => PaintPoints(p, e, Pens.Black));
+            if (Points.Count < 1000)
+            {
+                Points.ForEach(p => PaintPoints(p, e, Pens.Black));
+            }
             HullNodes.ForEach(n => PaintNode(n, e, Pens.Blue));
             PaintBaseLine(HullNodes[0], HullNodes[1], e, Pens.Red);
             PaintCoordinateSystem(e, Pens.Green);

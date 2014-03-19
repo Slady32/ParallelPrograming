@@ -45,7 +45,7 @@ namespace ConvexHull
             // lowerHalf is over the line (y < value)
             var lowerHalf = new List<Node>();
 
-            ExecuteSplit(_graph.Points, lowerHalf, upperHalf, leftNode, rightNode);
+            Split(_graph.Points, lowerHalf, upperHalf, leftNode, rightNode);
 
             FindMinY(lowerHalf, leftNode, rightNode);
             FindMaxY(upperHalf, rightNode, leftNode);
@@ -89,7 +89,7 @@ namespace ConvexHull
             // calculate y for x-value
             foreach (var point in points)
             {
-                Node curNode = new Node(point);
+                var curNode = new Node(point);
                 if (curNode.Position == leftNode.Position || curNode.Position == rightNode.Position)
                 {
                     continue;
@@ -146,7 +146,7 @@ namespace ConvexHull
                 ExecuteSplit(points, lowerHalf, null, prevNode, curNode);
                 if (lowerHalf.Count > 0)
                 {
-                    ExecuteFindMinY(lowerHalf, prevNode, curNode);
+                    FindMinY(lowerHalf, prevNode, curNode);
                 }
 
                 // all between cur and next point
@@ -158,7 +158,7 @@ namespace ConvexHull
                 ExecuteSplit(points, lowerHalf, null, curNode, nextNode);
                 if (lowerHalf.Count > 0)
                 {
-                    ExecuteFindMinY(lowerHalf, curNode, nextNode);
+                    FindMinY(lowerHalf, curNode, nextNode);
                 }
             }
         }
@@ -183,7 +183,7 @@ namespace ConvexHull
                 ExecuteSplit(points, null, upperHalf, prevNode, curNode);
                 if (upperHalf.Count > 0)
                 {
-                    ExecuteFindMaxY(upperHalf, prevNode, curNode);
+                    FindMaxY(upperHalf, prevNode, curNode);
                 }
 
                 upperHalf = new List<Node>();
@@ -194,7 +194,7 @@ namespace ConvexHull
                 ExecuteSplit(points, null, upperHalf, curNode, nextNode);
                 if (upperHalf.Count > 0)
                 {
-                    ExecuteFindMaxY(upperHalf, curNode, nextNode);
+                    FindMaxY(upperHalf, curNode, nextNode);
                 }
             }
         }
