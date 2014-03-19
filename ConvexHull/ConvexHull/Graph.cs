@@ -8,20 +8,22 @@ using System.Windows.Forms;
 
 namespace ConvexHull
 {
-    public class Graph : IPainter, IGraph
+    public class Graph : IPainter, IGraph, ICloneable
     {
-        public Guid Id { get; set; }
-        public Point Origin { get; private set; }
+        public Point Origin { get; set; }
         public IList<Point> Points { get; set; }
         public IList<Node> HullNodes { get; set; }
         public string Name { get; set; }
 
-        public Graph(Point origin)
+        public Graph()
         {
-            Id = Guid.NewGuid();
-            Origin = origin;
             Points = new List<Point>();
             HullNodes = new List<Node>();
+        }
+
+        public Graph(Point origin) : this()
+        {
+            Origin = origin;
         }
 
         public void Paint(PaintEventArgs e)
@@ -78,6 +80,11 @@ namespace ConvexHull
             var endPoint = new Point(node.Next.Position.X + Origin.X + 3, node.Next.Position.Y + Origin.Y + 3);
 
             e.Graphics.DrawLine(pen, startPoint, endPoint);
+        }
+
+        public object Clone()
+        {
+            return new Graph(Origin);
         }
     }
 }

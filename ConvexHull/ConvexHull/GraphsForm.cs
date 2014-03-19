@@ -24,50 +24,27 @@ namespace ConvexHull
             Hulls = new List<IHull>();
             InitializeComponent();
 
-            InitializeGraph(new Point(50, 100), GeneratingMethodEnum.SerialQuickHull, false);
-            InitializeGraph(new Point(400, 100), GeneratingMethodEnum.OneThreadPerSplitQuickHull, false);
-            InitializeGraph(new Point(50, 450), GeneratingMethodEnum.OneThreadSplitQuickHull, false);
-            InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialGiftWrapping, false);
+            CreateGraph(new Point(50, 100), 25);
+
+            InitializeGraph(GeneratingMethodEnum.SerialQuickHull);
+            _graph.Origin = new Point(400, 100);
+            InitializeGraph(GeneratingMethodEnum.OneThreadPerSplitQuickHull);
+            _graph.Origin = new Point(50, 450);
+            InitializeGraph(GeneratingMethodEnum.OneThreadSplitQuickHull);
+            _graph.Origin = new Point(400, 450);
+            InitializeGraph(GeneratingMethodEnum.SerialGiftWrapping);
 
         }
 
-        private void InitializeGraph(Point origin, GeneratingMethodEnum generatingMethod, bool generateRandom = true)
+        private void InitializeGraph( GeneratingMethodEnum generatingMethod)
         {
-            if (!generateRandom)
-            {
-                var graphFactory = new GraphFactory();
-                var pointList = new List<Point>
-                {
-                    new Point(62, 45),
-                    new Point(17, 112),
-                    new Point(108, 113),
-                    new Point(126, 135),
-                    new Point(53, 129),
-                    new Point(85, 44),
-                    new Point(80, 115),
-                    new Point(28, 4),
-                    new Point(96, 90),
-                    new Point(85, 163),
-                    new Point(72, 78),
-                    new Point(100, 29),
-                    new Point(153, 96),
-                    new Point(184, 164),
-                    new Point(183, 79)
-                };
-                    _graph = graphFactory.GenerateGraphWithList(origin, pointList);
-                    
-            }
-            else
-            {
-                _graph = new GraphFactory().GenerateGraphWithRandoms(origin, 25);
-            }
-            Graphs.Add(_graph);
+            Graphs.Add(new Graph { Origin = _graph.Origin, Points = _graph.Points});
 
             IHull hull = null;
             switch (generatingMethod)
             {
                 case GeneratingMethodEnum.SerialQuickHull:
-                    hull = new SerialQuickHull((Graph) Graphs.Last());
+                    hull = new SerialQuickHull((Graph)Graphs.Last());
                     break;
                 case GeneratingMethodEnum.OneThreadPerSplitQuickHull:
                     hull = new OneThreadPerSplitQuickHull((Graph)Graphs.Last());
@@ -101,19 +78,32 @@ namespace ConvexHull
 
         private void GenGraph_Click(object sender, EventArgs e)
         {
+            var pointCount = int.Parse(textBox2.Text);
+
             Graphs.Clear();
             textBox1.Text = string.Empty;
 
-            InitializeGraph(new Point(50, 100), GeneratingMethodEnum.SerialQuickHull);
-            InitializeGraph(new Point(400, 100), GeneratingMethodEnum.OneThreadPerSplitQuickHull);
-            InitializeGraph(new Point(50, 450), GeneratingMethodEnum.OneThreadSplitQuickHull);
-            InitializeGraph(new Point(400, 450), GeneratingMethodEnum.SerialGiftWrapping);
+            CreateGraph(new Point(50, 100), pointCount);
+
+            InitializeGraph(GeneratingMethodEnum.SerialQuickHull);
+            _graph.Origin = new Point(400, 100);
+            InitializeGraph(GeneratingMethodEnum.OneThreadPerSplitQuickHull);
+            _graph.Origin = new Point(50, 450);
+            InitializeGraph(GeneratingMethodEnum.OneThreadSplitQuickHull);
+            _graph.Origin = new Point(400, 450);
+            InitializeGraph(GeneratingMethodEnum.SerialGiftWrapping);
+
             Invalidate();
         }
 
         private void Done(object sender, TimeSpan elapsed)
         {
-            textBox1.Text += sender.GetType().Name + Environment.NewLine + elapsed.ToString() + Environment.NewLine;
+            textBox1.Text += sender.GetType().Name + Environment.NewLine + elapsed + Environment.NewLine;
+        }
+
+        private void CreateGraph(Point origin, int pointCount)
+        {
+            _graph = new GraphFactory().GenerateGraphWithRandoms(origin, pointCount);
         }
     }
 }
